@@ -1,0 +1,44 @@
+package com.david.springData.mongo;
+
+import java.util.List;
+
+import static org.springframework.data.mongodb.core.query.Update.update;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
+
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+
+import com.david.springData.mongo.model.Book;
+import com.david.springData.mongo.util.BookUtil;
+
+
+public class MongoTemplateFindApplication {
+	public static void main(String[] args) {
+		try (ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("application-context.xml");) {
+			MongoOperations template = context.getBean(MongoTemplate.class);
+			
+			template.dropCollection(Book.class);
+			
+			List<Book> books = BookUtil.create(3);
+			template.insert(books,Book.class);
+			
+			Query query = query(where("title").is("Java Core"));
+			Book anyBook=template.findOne(query, Book.class);
+			Book thisBook = template.findById(anyBook.getBookId(),Book.class);
+			System.out.println(anyBook.equals(thisBook));
+			
+			
+			
+			
+
+			
+			
+			
+		}
+	}
+}
